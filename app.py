@@ -15,14 +15,19 @@ def get_youtube_transcript(url):
         info = ydl.extract_info(url, download=False)
         return info.get('description', 'No transcript found.')
 
+from openai import OpenAI
+
+# Client ကို အသစ်သတ်မှတ်ပါ
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 def ask_ai(prompt):
-    # OpenAI GPT ကို မေးခွန်းမေးခြင်း
-    response = openai.ChatCompletion.create(
+    # ဗားရှင်းအသစ်အတွက် အသုံးပြုရမည့်ပုံစံ
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
     return response.choices[0].message.content
-
+    
 @app.route('/')
 def index():
     return render_template('index.html')
