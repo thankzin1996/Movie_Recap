@@ -1,43 +1,27 @@
-from flask import Flask, render_template, request
-import whisper
-import yt_dlp
-from openai import OpenAI
-import os
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
-# API Key ကို Environment Variable ကနေပဲ ယူပါ (မှန်ကန်ပါတယ်)
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-def process_video(url):
-    ydl_opts = {'format': 'bestaudio/best', 'outtmpl': 'audio.mp3'}
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
-    
-    model = whisper.load_model("base")
-    result = model.transcribe("audio.mp3")
-    text = result["text"]
-    
-    response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a movie recap expert."},
-            {"role": "user", "content": f"Summarize this movie transcript: {text}"}
-        ]
-    )
-    return response.choices[0].message.content
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
-    recap = ""
-    if request.method == 'POST':
-        url = request.form['url']
-        recap = process_video(url)
-    return render_template('index.html', recap=recap)
+    return render_template('index.html')
 
-import os
-# ... တခြား import များ ...
+@app.route('/process', methods=['POST'])
+def process():
+    data = request.json
+    tool = data.get('tool')
+    text = data.get('text')
+    
+    # ဤနေရာတွင် Tool အမျိုးအစားအလိုက် လုပ်ဆောင်ချက်များကို ထည့်ပါ
+    # ဥပမာ - if tool == 'recap': ...
+    
+    result_text = f"သင်ရွေးချယ်ထားသော Tool: {tool.upper()}. သင်ထည့်သွင်းသော အချက်အလက်: {text}. ဤအပိုင်းကို AI ဖြင့် ဆက်လက်တည်ဆောက်နိုင်ပါသည်။"
+    
+    return jsonify({"result": result_text})
 
 if __name__ == '__main__':
-    # Railway ကပေးတဲ့ Port ကို အမြဲယူသုံးပါ
-    port = int(os.environ.get("PORT", 8080)) 
+    # Railway အတွက် Port သတ်မှတ်ချက်
+    import os
+    port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
+    
