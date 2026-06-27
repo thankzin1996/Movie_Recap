@@ -1,6 +1,27 @@
+import os
 from flask import Flask, render_template, request, jsonify
+import yt_dlp
+import openai
 
 app = Flask(__name__)
+
+# OpenAI API Key ကို Railway Variables ထဲမှာ ထည့်ထားပါ
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def get_youtube_transcript(url):
+    # yt-dlp ဖြင့် YouTube မှ အသံ/စာသားရယူခြင်း
+    ydl_opts = {'writesubtitles': True, 'skip_download': True, 'quiet': True}
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+        return info.get('description', 'No transcript found.')
+
+def ask_ai(prompt):
+    # OpenAI GPT ကို မေးခွန်းမေးခြင်း
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
 
 @app.route('/')
 def index():
@@ -12,16 +33,22 @@ def process():
     tool = data.get('tool')
     text = data.get('text')
     
-    # ဤနေရာတွင် Tool အမျိုးအစားအလိုက် လုပ်ဆောင်ချက်များကို ထည့်ပါ
-    # ဥပမာ - if tool == 'recap': ...
+    try:
+        if tool == 'recap' or tool == 'yt':
+            transcript = get_youtube_transcript(text)
+            result = ask_ai(f"Summarize this video content: {transcript}")
+        elif tool == 'translate':
+            result = ask_ai(f"Translate this to Burmese: {text}")
+        elif tool == 'chat':
+            result = ask_ai(text)
+        else:
+            result = "ဤ Tool ကို မလုပ်ဆောင်နိုင်သေးပါ။"
+    except Exception as e:
+        result = f"Error: {str(e)}"
     
-    result_text = f"သင်ရွေးချယ်ထားသော Tool: {tool.upper()}. သင်ထည့်သွင်းသော အချက်အလက်: {text}. ဤအပိုင်းကို AI ဖြင့် ဆက်လက်တည်ဆောက်နိုင်ပါသည်။"
-    
-    return jsonify({"result": result_text})
+    return jsonify({"result": result})
 
 if __name__ == '__main__':
-    # Railway အတွက် Port သတ်မှတ်ချက်
-    import os
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
     
