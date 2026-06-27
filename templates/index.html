@@ -1,17 +1,33 @@
 <!DOCTYPE html>
-<html>
-<head><title>Movie Recap Tool</title></head>
-<body>
-    <h1>Movie Recap Tool</h1>
-    <form method="POST">
-        <input type="text" name="url" placeholder="YouTube Link ကိုထည့်ပါ" required>
-        <button type="submit">Recap ရယူမည်</button>
-    </form>
-    {% if recap %}
-        <h3>ရလဒ်:</h3>
-        <p>{{ recap }}</p>
-    {% endif %}
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recap Tool</title>
+    <!-- Tailwind CSS link -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-5">
+    <div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-5 text-center text-gray-800">Movie Recap Tool</h1>
+        <form method="POST" class="flex flex-col gap-4">
+            <input type="text" name="url" placeholder="YouTube Link ကို ထည့်ပါ" required 
+                   class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" 
+                    class="bg-blue-600 text-white p-3 rounded font-semibold hover:bg-blue-700 transition">
+                Recap ရယူမည်
+            </button>
+        </form>
+
+        {% if recap %}
+        <div class="mt-8 p-5 bg-gray-50 border rounded-lg">
+            <h3 class="text-lg font-bold mb-3">ရလဒ်:</h3>
+            <p class="text-gray-700 leading-relaxed">{{ recap }}</p>
+        </div>
+        {% endif %}
+    </div>
 </body>
 </html>
+
 
 
