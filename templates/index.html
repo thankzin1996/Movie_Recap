@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Movie Recap Tool</title></head>
+<body>
+    <h1>Movie Recap Tool</h1>
+    <form method="POST">
+        <input type="text" name="url" placeholder="YouTube Link ကိုထည့်ပါ" required>
+        <button type="submit">Recap ရယူမည်</button>
+    </form>
+    {% if recap %}
+        <h3>ရလဒ်:</h3>
+        <p>{{ recap }}</p>
+    {% endif %}
+</body>
+</html>
+
+
