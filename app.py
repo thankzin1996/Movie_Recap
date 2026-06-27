@@ -35,5 +35,7 @@ def index():
     return render_template('index.html', recap=recap)
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    
+    # Railway က ပေးတဲ့ port ကို သုံးဖို့ OS ကနေ ယူရပါမယ်
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+
