@@ -1,91 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="my">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Media Studio Pro v7</title>
     <style>
-        body{font-family:Arial;margin:0;background:#eef2f7}
-        header{background:#111827;color:white;padding:16px;display:flex;justify-content:space-between}
-        .container{padding:20px}
-        .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-        .card{background:white;padding:18px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.1);cursor:pointer}
-        button{padding:10px 16px;border:none;border-radius:8px;background:#4f46e5;color:white;margin-top:10px}
-        textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin-top:10px}
-        .tool{display:none}
+        /* 3D Modern Background */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: radial-gradient(circle at top right, #1a1a2e, #0f0f1a);
+            color: white;
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .container { padding: 20px; }
+
+        /* 3D Glassmorphism Card */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .card:hover { transform: translateY(-10px); background: rgba(255, 255, 255, 0.1); }
+
+        /* Input & Button Styles */
+        textarea {
+            width: 100%; padding: 15px; border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.2); color: white; margin-top: 10px;
+        }
+        button {
+            padding: 12px 24px; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+        .tool { display: none; }
     </style>
 </head>
 <body>
-    <header>
-        <div>AI Media Studio Pro v7</div>
-        <div id="userBox">Guest</div>
-    </header>
 
-    <div class="container" id="loginPage">
-        <h3>Login</h3>
-        <input id="username" placeholder="Enter username">
-        <button onclick="login()">Login</button>
+<header>
+    <div>✨ AI Media Studio Pro v7</div>
+    <div id="userBox">Guest</div>
+</header>
+
+<!-- Login Page -->
+<div class="container" id="loginPage">
+    <h3>Welcome! Please Login</h3>
+    <input id="username" placeholder="Enter username" style="padding:10px; border-radius:8px; border:none;">
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- Dashboard -->
+<div class="container" id="dashboard" style="display:none">
+    <h3>Choose your Tool</h3>
+    <div class="grid">
+        <div class="card" onclick="openTool('translate')">🌐 Translate</div>
+        <div class="card" onclick="openTool('recap')">🎬 Video Recap</div>
+        <div class="card" onclick="openTool('yt')">▶ YouTube Recap</div>
+        <div class="card" onclick="openTool('chat')">🤖 AI Chat</div>
     </div>
+</div>
 
-    <div class="container" id="dashboard" style="display:none">
-        <h3>Dashboard (Credits: <span id="credits">20</span>)</h3>
-        <div class="grid">
-            <div class="card" onclick="openTool('translate')">🌐 Translate</div>
-            <div class="card" onclick="openTool('recap')">🎬 Video Recap</div>
-            <div class="card" onclick="openTool('yt')">▶ YouTube Recap</div>
-            <div class="card" onclick="openTool('chat')">🤖 AI Chat</div>
-        </div>
-    </div>
+<!-- Tool Page -->
+<div class="container tool" id="toolPage">
+    <button onclick="back()">⬅ Back</button>
+    <h3 id="toolTitle"></h3>
+    <textarea id="inputText" rows="5" placeholder="Enter your text or link here..."></textarea>
+    <button onclick="runTool()">Run AI Processing</button>
+    <div id="output" style="margin-top:20px; padding:20px; background:rgba(255,255,255,0.05); border-radius:15px;"></div>
+</div>
 
-    <div class="container tool" id="toolPage">
-        <button onclick="back()">⬅ Back</button>
-        <h3 id="toolTitle"></h3>
-        <textarea id="inputText" rows="5" placeholder="Enter text or link"></textarea>
-        <button onclick="runTool()">Run Tool</button>
-        <div id="output" style="margin-top:20px; padding:10px; background:white; border-radius:8px;"></div>
-    </div>
+<script>
+    let currentTool="";
+    function login(){
+        const name=document.getElementById("username").value;
+        if(!name)return alert("Enter username");
+        document.getElementById("loginPage").style.display="none";
+        document.getElementById("dashboard").style.display="block";
+        document.getElementById("userBox").innerText=name;
+    }
+    function openTool(tool){
+        document.getElementById("dashboard").style.display="none";
+        document.getElementById("toolPage").style.display="block";
+        currentTool=tool;
+        document.getElementById("toolTitle").innerText=tool.toUpperCase();
+    }
+    function back(){
+        document.getElementById("toolPage").style.display="none";
+        document.getElementById("dashboard").style.display="block";
+    }
+    async function runTool(){
+        document.getElementById("output").innerText="✨ AI is cooking your result...";
+        const res = await fetch("/process", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({tool: currentTool, text: document.getElementById("inputText").value})
+        });
+        const data = await res.json();
+        document.getElementById("output").innerText = data.result;
+    }
+</script>
 
-    <script>
-        let currentTool="";
-        let credits=20;
-
-        function login(){
-            const name=document.getElementById("username").value;
-            if(!name)return alert("Enter username");
-            document.getElementById("loginPage").style.display="none";
-            document.getElementById("dashboard").style.display="block";
-            document.getElementById("userBox").innerText=name;
-        }
-
-        function openTool(tool){
-            document.getElementById("dashboard").style.display="none";
-            document.getElementById("toolPage").style.display="block";
-            currentTool=tool;
-            document.getElementById("toolTitle").innerText=tool.toUpperCase();
-        }
-
-        function back(){
-            document.getElementById("toolPage").style.display="none";
-            document.getElementById("dashboard").style.display="block";
-        }
-
-        async function runTool(){
-            if(credits<=0) return alert("No credits left");
-            
-            document.getElementById("output").innerText="Processing...";
-            
-            const res = await fetch("/process", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    tool: currentTool, 
-                    text: document.getElementById("inputText").value
-                })
-            });
-            const data = await res.json();
-            document.getElementById("output").innerText = data.result;
-            credits--;
-            document.getElementById("credits").innerText = credits;
-        }
-    </script>
 </body>
 </html>
