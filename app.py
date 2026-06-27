@@ -34,13 +34,10 @@ def index():
         recap = process_video(url)
     return render_template('index.html', recap=recap)
 
-if __name__ == '__main__':
-    # Railway က ပေးတဲ့ port ကို သုံးဖို့ OS ကနေ ယူရပါမယ်
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+import os
+# ... တခြား import များ ...
 
 if __name__ == '__main__':
-    # Railway က ပေးတဲ့ Port ကို အသုံးပြုပါ၊ မရှိရင် 5000 ကို သုံးပါ
-    port = int(os.environ.get("PORT", 5000))
+    # Railway ကပေးတဲ့ Port ကို အမြဲယူသုံးပါ
+    port = int(os.environ.get("PORT", 8080)) 
     app.run(host='0.0.0.0', port=port)
-    
