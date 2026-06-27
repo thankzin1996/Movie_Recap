@@ -1,127 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Media Studio Pro v7</title>
-<style>
-body{font-family:Arial;margin:0;background:#eef2f7}
-header{background:#111827;color:white;padding:16px;display:flex;justify-content:space-between}
-.container{padding:20px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.card{background:white;padding:18px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.1);cursor:pointer}
-button{padding:10px 16px;border:none;border-radius:8px;background:#4f46e5;color:white;margin-top:10px}
-textarea,input{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin-top:10px}
-.tool{display:none}
-</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Media Studio Pro v7</title>
+    <style>
+        body{font-family:Arial;margin:0;background:#eef2f7}
+        header{background:#111827;color:white;padding:16px;display:flex;justify-content:space-between}
+        .container{padding:20px}
+        .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+        .card{background:white;padding:18px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.1);cursor:pointer}
+        button{padding:10px 16px;border:none;border-radius:8px;background:#4f46e5;color:white;margin-top:10px}
+        textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;margin-top:10px}
+        .tool{display:none}
+    </style>
 </head>
-
 <body>
+    <header>
+        <div>AI Media Studio Pro v7</div>
+        <div id="userBox">Guest</div>
+    </header>
 
-<header>
-<div>AI Media Studio Pro v7</div>
-<div id="userBox">Guest</div>
-</header>
+    <div class="container" id="loginPage">
+        <h3>Login</h3>
+        <input id="username" placeholder="Enter username">
+        <button onclick="login()">Login</button>
+    </div>
 
-<div class="container" id="loginPage">
-<h3>Login</h3>
-<input id="username" placeholder="Enter username">
-<button onclick="login()">Login</button>
-</div>
+    <div class="container" id="dashboard" style="display:none">
+        <h3>Dashboard (Credits: <span id="credits">20</span>)</h3>
+        <div class="grid">
+            <div class="card" onclick="openTool('translate')">🌐 Translate</div>
+            <div class="card" onclick="openTool('recap')">🎬 Video Recap</div>
+            <div class="card" onclick="openTool('yt')">▶ YouTube Recap</div>
+            <div class="card" onclick="openTool('chat')">🤖 AI Chat</div>
+        </div>
+    </div>
 
-<div class="container" id="dashboard" style="display:none">
+    <div class="container tool" id="toolPage">
+        <button onclick="back()">⬅ Back</button>
+        <h3 id="toolTitle"></h3>
+        <textarea id="inputText" rows="5" placeholder="Enter text or link"></textarea>
+        <button onclick="runTool()">Run Tool</button>
+        <div id="output" style="margin-top:20px; padding:10px; background:white; border-radius:8px;"></div>
+    </div>
 
-<h3>30 Tools Dashboard (Credits: <span id="credits">20</span>)</h3>
+    <script>
+        let currentTool="";
+        let credits=20;
 
-<div class="grid">
+        function login(){
+            const name=document.getElementById("username").value;
+            if(!name)return alert("Enter username");
+            document.getElementById("loginPage").style.display="none";
+            document.getElementById("dashboard").style.display="block";
+            document.getElementById("userBox").innerText=name;
+        }
 
-<div class="card" onclick="openTool('translate')">🌐 Translate</div>
-<div class="card" onclick="openTool('script')">✍ Script Writer</div>
-<div class="card" onclick="openTool('voice')">🔊 AI Voice</div>
-<div class="card" onclick="openTool('recap')">🎬 Video Recap</div>
-<div class="card" onclick="openTool('story')">📖 Story Generator</div>
-<div class="card" onclick="openTool('blog')">📰 Blog Writer</div>
-<div class="card" onclick="openTool('caption')">💬 Caption Generator</div>
-<div class="card" onclick="openTool('subtitle')">📝 Subtitle Generator</div>
-<div class="card" onclick="openTool('transcript')">🎤 Transcript</div>
-<div class="card" onclick="openTool('yt')">▶ YouTube Recap</div>
-<div class="card" onclick="openTool('summary')">📊 Media Summary</div>
-<div class="card" onclick="openTool('thumbnail')">🖼 Thumbnail Generator</div>
-<div class="card" onclick="openTool('title')">🏷 Title Generator</div>
-<div class="card" onclick="openTool('hashtag')">#️⃣ Hashtag Generator</div>
-<div class="card" onclick="openTool('prompt')">⚙ Prompt Generator</div>
-<div class="card" onclick="openTool('ideas')">💡 Content Ideas</div>
-<div class="card" onclick="openTool('chat')">🤖 AI Chat</div>
+        function openTool(tool){
+            document.getElementById("dashboard").style.display="none";
+            document.getElementById("toolPage").style.display="block";
+            currentTool=tool;
+            document.getElementById("toolTitle").innerText=tool.toUpperCase();
+        }
 
-</div>
+        function back(){
+            document.getElementById("toolPage").style.display="none";
+            document.getElementById("dashboard").style.display="block";
+        }
 
-</div>
-
-<div class="container tool" id="toolPage">
-
-<button onclick="back()">⬅ Back</button>
-
-<h3 id="toolTitle"></h3>
-
-<textarea id="inputText" placeholder="Enter text, topic, or link"></textarea>
-
-<button onclick="runTool()">Run Tool</button>
-
-<div id="output"></div>
-
-</div>
-
-<script>
-
-let currentTool=""
-let credits=20
-
-function login(){
-const name=document.getElementById("username").value
-if(!name)return alert("Enter username")
-document.getElementById("loginPage").style.display="none"
-document.getElementById("dashboard").style.display="block"
-document.getElementById("userBox").innerText=name
-}
-
-function openTool(tool){
-document.getElementById("dashboard").style.display="none"
-document.getElementById("toolPage").style.display="block"
-currentTool=tool
-document.getElementById("toolTitle").innerText=tool.toUpperCase()
-}
-
-function back(){
-document.getElementById("toolPage").style.display="none"
-document.getElementById("dashboard").style.display="block"
-}
-
-async function runTool(){
-
-if(credits<=0){
-alert("No credits left")
-return
-}
-
-credits--
-document.getElementById("credits").innerText=credits
-
-const text=document.getElementById("inputText").value
-
-document.getElementById("output").innerText="Processing..."
-
-const res=await fetch("/.netlify/functions/gemini",{
-method:"POST",
-body:JSON.stringify({prompt:currentTool+": "+text})
-})
-
-const data=await res.json()
-
-document.getElementById("output").innerText=data.text
-
-}
-
-</script>
-
+        async function runTool(){
+            if(credits<=0) return alert("No credits left");
+            
+            document.getElementById("output").innerText="Processing...";
+            
+            const res = await fetch("/process", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    tool: currentTool, 
+                    text: document.getElementById("inputText").value
+                })
+            });
+            const data = await res.json();
+            document.getElementById("output").innerText = data.result;
+            credits--;
+            document.getElementById("credits").innerText = credits;
+        }
+    </script>
 </body>
 </html>
-
